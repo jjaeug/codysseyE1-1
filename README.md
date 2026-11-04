@@ -3,7 +3,6 @@
 ## 1. GitHub Repository + README.md
 - GitHub 저장소 생성 및 README.md 작성
 - git init, git remote add, git push 완료
-
 ## 2. 터미널 기본 명령어
 - `pwd` : 현재 경로 확인
 - `ls` : 파일 목록 확인
@@ -41,3 +40,35 @@
 ## 6. 컨테이너 실행
 - `docker run hello-world` : hello-world 컨테이너 실행
 - `docker run -it ubuntu bash` : ubuntu 컨테이너 실행
+
+## 7. Dockerfile 빌드 및 실행
+- `docker build -t my-ubuntu .` : Dockerfile로 이미지 빌드
+- `docker run my-ubuntu` : 커스텀 이미지 실행
+
+### 작성한 Dockerfile
+` ` `dockerfile
+FROM ubuntu:22.04
+RUN apt-get update && apt-get install -y curl
+CMD ["bash"]
+` ` `
+
+## 8. 바인드 마운트 실습
+- 호스트 디렉토리를 컨테이너에 직접 연결
+
+### 실행 명령어
+` ` `bash
+docker run -d \
+  --name bind-nginx \
+  -p 8090:80 \
+  -v ~/dev-mission/bind-test:/usr/share/nginx/html \
+  nginx
+` ` `
+
+### 결과
+- 최초 접속 → `<h1>Hello from Host!</h1>` 확인
+- 파일 수정 후 → `<h1>Hello, Changed!</h1>` 즉시 반영
+- 컨테이너 재시작 없이 변경사항 반영 ✅
+
+## 9. Docker 볼륨 (Volume) 실습 
+- `docker volume create mydata` : 볼륨 생성
+- `docker run -v mydata:/data ubuntu` : 볼륨 연결
