@@ -37,7 +37,7 @@
 
   1. 터미널로 작업 디렉토리를 만들고 파일·권한을 다룬다.
   2. Docker를 설치·점검하고 컨테이너를 실행·관리한다(이미지, 로그, 리소스).
-  3. Dockerfile로 커스텀 이미지를 만들고, 포트 매핑으로 접속을 확인한다.
+  3. Dockerfile로 커스텀 이미지(ubuntu 기반 도구 이미지, nginx 기반 웹 서버 이미지)를 만들고, 포트 매핑으로 접속을 확인한다.
   4. 바인드 마운트로 "변경 반영", 볼륨으로 "데이터 영속성"을 검증한다.
   5. Git 설정 후 GitHub 저장소와 연동한다.
 
@@ -87,8 +87,9 @@ git version 2.43.0
 - [x] `hello-world` 실행
 - [x] `ubuntu` 컨테이너 진입 후 명령 실행
 - [x] 컨테이너 종료/유지 (attach / exec) 차이 관찰
-- [x] Dockerfile 커스텀 이미지 빌드 및 실행
-- [x] 포트 매핑 접속 (8080, 8090 — 2회)
+- [x] Dockerfile 커스텀 이미지 빌드 및 실행 (`my-ubuntu`)
+- [x] Dockerfile 기반 웹 서버 이미지 빌드 및 실행 (`my-web`: nginx + `web/app/` 소스)
+- [x] 포트 매핑 접속 (8080, 8090, 8081 — 3회)
 - [x] 바인드 마운트 변경 반영
 - [x] 볼륨 영속성 검증
 - [x] Git 사용자 정보·기본 브랜치 설정 + GitHub 저장소 연동
@@ -103,8 +104,8 @@ git version 2.43.0
 |Docker 점검|`docker --version`, `docker info`|버전 출력, `Server Version` 표시(데몬 동작)|[7절](#7-docker-설치-및-점검)|
 |운영 명령|`docker images`, `docker ps -a`, `docker logs`, `docker stats`|이미지·컨테이너 목록, 접속 로그, CPU/메모리 사용량|[8절](#8-docker-기본-운영-명령)|
 |hello-world|`docker run hello-world`|`Hello from Docker!` 출력|[9절](#9-컨테이너-실행-실습)|
-|커스텀 이미지|`docker build -t my-ubuntu .`, `docker run my-ubuntu`|빌드 성공, CMD 메시지 출력|[10절](#10-dockerfile-커스텀-이미지)|
-|포트 매핑|`docker run -p 8080:80 ...`, 브라우저/`curl` 접속|`localhost:8080`, `localhost:8090`에서 nginx 응답|[11절](#11-포트-매핑), [p/browser-8080.png](p/browser-8080.png), [p/browser-8090.png](p/browser-8090.png)|
+|커스텀 이미지|`docker build -t my-ubuntu .`, `docker build -t my-web:1.0 web/`, `docker run ...`|빌드 성공, CMD 메시지 출력, 웹 페이지 응답, `(healthy)` 상태|[10절](#10-dockerfile-커스텀-이미지)|
+|포트 매핑|`docker run -p 8080:80 ...`, 브라우저/`curl` 접속|`localhost:8080`, `localhost:8090`, `localhost:8081`에서 응답|[11절](#11-포트-매핑), [p/browser-8080.png](p/browser-8080.png), [p/browser-8090.png](p/browser-8090.png), [p/browser-8081.png](p/browser-8081.png)|
 |바인드 마운트|`docker run -v $(pwd)/bind-test:...`, `curl localhost:8090`|호스트 파일 수정이 재시작 없이 반영|[12절](#12-바인드-마운트)|
 |볼륨|`docker volume create`, 컨테이너 삭제 후 재연결|새 컨테이너에서 기존 데이터 확인|[13절](#13-docker-볼륨-영속성)|
 |Git|`git config --list`, `git remote -v`|`user.name`, `user.email`, `init.defaultBranch` 설정, 원격 저장소 연결|[14절](#14-git-설정-및-github-연동), [p/2.png](p/2.png), [p/vscode-github.png](p/vscode-github.png)|
@@ -459,12 +460,19 @@ b150e1b5a8cd   ubuntu:22.04   "bash"     52 seconds ago   Exited (0) 4 seconds a
 
 ## 10. Dockerfile 커스텀 이미지
 
-### 선택한 방식과 베이스
+두 가지 방식으로 커스텀 이미지를 직접 작성했습니다.
+
+| 이미지 | 방식 | 베이스 | Dockerfile 위치 | 용도 |
+|---|---|---|---|---|
+| `my-ubuntu` | (B) Linux 베이스 + 기능 추가 | `ubuntu:22.04` | [`Dockerfile`](Dockerfile) | curl이 설치된 리눅스 도구 이미지 |
+| `my-web:1.0` | (A) 웹 서버 베이스 + 콘텐츠 교체 | `nginx:alpine` | [`web/Dockerfile`](web/Dockerfile) | 직접 만든 페이지(`web/app/`)를 제공하는 웹 서버 |
+
+### 10-1. my-ubuntu — Linux 베이스 + 패키지 추가
 
 * **방식 (B)**: Linux 베이스 이미지 + 기능(패키지) 추가
 * **베이스 이미지**: `ubuntu:22.04` (Docker Hub 공식 이미지)
 
-### 작성한 Dockerfile
+#### 작성한 Dockerfile
 
 ```dockerfile
 FROM ubuntu:22.04
@@ -474,7 +482,7 @@ RUN apt-get update && apt-get install -y curl
 CMD ["echo", "Hello from my container!"]
 ```
 
-### 커스텀 포인트와 목적
+#### 커스텀 포인트와 목적
 
 |줄|목적|
 |-|-|
@@ -484,7 +492,7 @@ CMD ["echo", "Hello from my container!"]
 
 **이미지 vs 컨테이너**: 이미지는 실행에 필요한 파일·설정을 묶은 읽기 전용 템플릿이고, 컨테이너는 그 이미지로 띄운 실행 인스턴스입니다. 같은 이미지로 컨테이너를 여러 개 만들 수 있습니다.
 
-### 빌드
+#### 빌드
 
 buildx가 설치되어 있지 않으면 `DEPRECATED: The legacy builder is deprecated` 경고가 나오지만 빌드에는 문제가 없습니다.
 마지막 줄이 `Successfully tagged my-ubuntu:latest`(legacy builder) 또는 `naming to docker.io/library/my-ubuntu ... done`(BuildKit)이면 성공입니다.
@@ -523,7 +531,7 @@ Successfully built 88656189c6b5
 Successfully tagged my-ubuntu:latest
 ```
 
-### 실행
+#### 실행
 
 ```bash
 docker run --rm my-ubuntu                   # CMD 메시지 확인
@@ -539,6 +547,125 @@ Release-Date: 2022-01-05
 Protocols: dict file ftp ftps gopher gophers http https imap imaps ldap ldaps mqtt pop3 pop3s rtmp rtsp scp sftp smb smbs smtp smtps telnet tftp
 Features: alt-svc AsynchDNS brotli GSS-API HSTS HTTP2 HTTPS-proxy IDN IPv6 Kerberos Largefile libz NTLM NTLM_WB PSL SPNEGO SSL TLS-SRP UnixSockets zstd
 ```
+
+### 10-2. my-web — 웹 서버 베이스 + 정적 콘텐츠 교체
+
+* **방식 (A)**: 웹 서버 베이스 이미지 + 정적 콘텐츠·설정 교체
+* **베이스 이미지**: `nginx:alpine` (Docker Hub 공식 nginx 이미지의 Alpine Linux 버전)
+* **선택 이유**: 웹 서버가 이미 설치·설정된 공식 이미지에 내 콘텐츠만 넣으면 되고, alpine 버전은 용량이 작아(`CONTENT SIZE` 26.3MB) 메모리가 작은 노트북에 적합
+
+#### 웹 서버 소스 — [`web/app/index.html`](web/app/index.html)
+
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>codysseyE1-1 web</title>
+</head>
+<body>
+  <h1>codysseyE1-1 커스텀 웹 서버</h1>
+  <p>Dockerfile로 만든 nginx 이미지에서 제공하는 페이지입니다.</p>
+</body>
+</html>
+```
+
+`<meta charset="UTF-8">`은 브라우저가 한글을 올바르게 표시하도록 문자 인코딩을 지정합니다.
+
+#### 작성한 Dockerfile — [`web/Dockerfile`](web/Dockerfile)
+
+```dockerfile
+FROM nginx:alpine
+LABEL org.opencontainers.image.title="codyssey-web"
+ENV APP_ENV=dev
+COPY app/ /usr/share/nginx/html/
+HEALTHCHECK --interval=10s --timeout=3s CMD wget -qO- http://localhost/ > /dev/null || exit 1
+```
+
+#### 커스텀 포인트와 목적
+
+|줄|목적|
+|-|-|
+|`FROM nginx:alpine`|웹 서버(nginx)가 준비된 가벼운 공식 이미지를 베이스로 사용|
+|`LABEL org.opencontainers.image.title=...`|이미지에 이름표(메타데이터)를 붙여 `docker inspect`로 어떤 이미지인지 확인 가능|
+|`ENV APP_ENV=dev`|컨테이너 안에 실행 환경을 알려주는 환경변수 지정|
+|`COPY app/ /usr/share/nginx/html/`|nginx 기본 환영 페이지를 직접 작성한 `web/app/` 소스로 교체 (핵심 커스텀 포인트)|
+|`HEALTHCHECK ...`|10초마다 컨테이너 스스로 웹 페이지에 접속해 보고, 정상이면 `docker ps`에 `(healthy)`로 표시|
+
+#### 빌드
+
+`web/` 폴더를 빌드 기준(build context)으로 지정해, 필요한 파일만 Docker에 전달합니다. (`Sending build context` 3.584kB — 저장소 전체를 보낸 `my-ubuntu`의 854kB보다 훨씬 작음)
+
+```text
+$ docker build -t my-web:1.0 web/
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  3.584kB
+Step 1/5 : FROM nginx:alpine
+alpine: Pulling from library/nginx
+...(레이어 다운로드 생략)
+Digest: sha256:785835ea65db4bba6f021acc0f3be91b0fef76a53fe41f8588c6698d2aed0606
+Status: Downloaded newer image for nginx:alpine
+ ---> 785835ea65db
+Step 2/5 : LABEL org.opencontainers.image.title="codyssey-web"
+ ---> Running in ba1f1b24b0cd
+ ---> Removed intermediate container ba1f1b24b0cd
+ ---> a580ab654fe2
+Step 3/5 : ENV APP_ENV=dev
+ ---> Running in 6e567f8e8a31
+ ---> Removed intermediate container 6e567f8e8a31
+ ---> ca0371b866a8
+Step 4/5 : COPY app/ /usr/share/nginx/html/
+ ---> 965716393ecf
+Step 5/5 : HEALTHCHECK --interval=10s --timeout=3s CMD wget -qO- http://localhost/ > /dev/null || exit 1
+ ---> Running in 576bdad31a91
+ ---> Removed intermediate container 576bdad31a91
+ ---> bab68497266c
+Successfully built bab68497266c
+Successfully tagged my-web:1.0
+```
+
+#### 실행 및 확인
+
+```bash
+docker run -d --name my-web-8081 -p 8081:80 my-web:1.0
+curl http://localhost:8081
+docker ps                                   # (healthy) 확인
+docker exec my-web-8081 printenv APP_ENV    # ENV 확인
+```
+
+```text
+$ docker run -d --name my-web-8081 -p 8081:80 my-web:1.0
+8e0885ec15b46edc09ef27c3bf367bc3adc08398ac053b3086e388960cb1b308
+$ curl http://localhost:8081
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>codysseyE1-1 web</title>
+</head>
+<body>
+  <h1>codysseyE1-1 커스텀 웹 서버</h1>
+  <p>Dockerfile로 만든 nginx 이미지에서 제공하는 페이지입니다.</p>
+</body>
+</html>
+$ docker ps
+CONTAINER ID   IMAGE        COMMAND                  CREATED             STATUS                    PORTS                                     NAMES
+8e0885ec15b4   my-web:1.0   "/docker-entrypoint.…"   58 seconds ago      Up 57 seconds (healthy)   0.0.0.0:8081->80/tcp, [::]:8081->80/tcp   my-web-8081
+2e28c7291f82   nginx        "/docker-entrypoint.…"   About an hour ago   Up About an hour          0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   test-nginx
+$ docker exec my-web-8081 printenv APP_ENV
+dev
+```
+
+| 확인 | 결과 | 의미 |
+|---|---|---|
+| `curl` 응답 | 직접 작성한 `web/app/index.html` 내용 | `COPY`로 기본 페이지가 교체됨 |
+| `docker ps` STATUS | `Up 57 seconds (healthy)` | `HEALTHCHECK` 동작 |
+| `printenv APP_ENV` | `dev` | `ENV` 설정이 컨테이너에 적용됨 |
+
+브라우저 접속 화면은 [11절 접속 3](#11-포트-매핑)에 있습니다.
 
 ## 11. 포트 매핑
 
@@ -594,6 +721,17 @@ security features and capabilities please refer to
 `bind-nginx` 컨테이너를 8090 포트로 실행했습니다. ([12절](#12-바인드-마운트))
 
 ![localhost:8090](./p/browser-8090.png)
+
+### 접속 3: 8081 → 80 (직접 만든 웹 서버 이미지)
+
+[10-2절](#10-dockerfile-커스텀-이미지)에서 만든 `my-web:1.0` 이미지를 8081 포트로 실행했습니다.
+8080(`test-nginx`)이 사용 중이어도, 호스트 포트를 8081로 다르게 지정했기 때문에 컨테이너 포트 80끼리는 충돌하지 않습니다.
+
+```bash
+docker run -d --name my-web-8081 -p 8081:80 my-web:1.0
+```
+
+![localhost:8081](./p/browser-8081.png)
 
 ## 12. 바인드 마운트
 
@@ -816,12 +954,34 @@ conflict-test
 - **해결**: VSCode의 GitHub 로그인(브라우저 인증)으로 push. WSL에서는 GitHub CLI로 브라우저 인증 후 push (`sudo apt install -y gh` → `gh auth login`).
 - **주의**: 비밀번호나 토큰을 터미널·문서에 직접 붙여넣지 않는다 ([15절](#15-보안-및-개인정보-보호)).
 
+### 케이스 5: 웹 서버 이미지 빌드 후 접속 실패
+
+- **문제**: `my-web:1.0` 빌드 성공 후 `curl http://localhost:8081`을 실행하자 연결에 실패했다.
+- **원인 가설**: 8081 포트에 연결된 컨테이너가 실행되고 있지 않다.
+- **확인**: `docker ps`에 `test-nginx`(8080)만 있고, `docker exec my-web-8081 ...`은 `No such container` → 이미지만 만들고 `docker run`을 하지 않은 상태였다.
+- **해결**: `docker run -d --name my-web-8081 -p 8081:80 my-web:1.0`으로 컨테이너를 실행한 뒤 다시 접속 → 정상 응답 ([10-2절](#10-dockerfile-커스텀-이미지)).
+- **배운 점**: `docker build`는 이미지(템플릿)만 만들 뿐이고, 웹 서버가 실제로 동작하려면 `docker run`으로 컨테이너를 띄워야 한다.
+
+```text
+$ curl http://localhost:8081
+curl: (7) Failed to connect to localhost port 8081 after 5 ms: Couldn't connect to server
+$ docker ps
+CONTAINER ID   IMAGE     COMMAND                  CREATED             STATUS             PORTS                                     NAMES
+2e28c7291f82   nginx     "/docker-entrypoint.…"   About an hour ago   Up About an hour   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   test-nginx
+$ docker exec my-web-8081 printenv APP_ENV
+Error response from daemon: No such container: my-web-8081
+```
+
 ## 17. 저장소 구성 및 재현 방법
 
 ```text
 codysseyE1-1/
 ├── README.md              # 기술 문서 (이 파일)
-├── Dockerfile             # ubuntu:22.04 + curl 커스텀 이미지
+├── Dockerfile             # (B) ubuntu:22.04 + curl 커스텀 이미지
+├── web/
+│   ├── Dockerfile         # (A) nginx:alpine 웹 서버 커스텀 이미지
+│   └── app/
+│       └── index.html     # 웹 서버 소스 (정적 페이지)
 ├── bind-test/
 │   └── index.html         # 바인드 마운트로 nginx에 연결한 페이지
 ├── hello.txt              # 터미널 실습 파일
@@ -835,9 +995,14 @@ codysseyE1-1/
 git clone https://github.com/jjaeug/codysseyE1-1.git ~/dev-mission
 cd ~/dev-mission
 
-# 커스텀 이미지
+# 커스텀 이미지 (B)
 docker build -t my-ubuntu .
 docker run --rm my-ubuntu
+
+# 웹 서버 커스텀 이미지 (A)
+docker build -t my-web:1.0 web/
+docker run -d --name my-web-8081 -p 8081:80 my-web:1.0
+curl http://localhost:8081
 
 # 포트 매핑
 docker run -d --name test-nginx -p 8080:80 nginx
@@ -853,13 +1018,13 @@ docker run --rm -v my-volume:/data ubuntu:22.04 bash -c 'echo "볼륨 테스트 
 docker run --rm -v my-volume:/data ubuntu:22.04 cat /data/test.txt
 
 # 정리
-docker rm -f test-nginx bind-nginx
+docker rm -f test-nginx bind-nginx my-web-8081
 docker volume rm my-volume
 ```
 
 주의사항:
 
-* 8080/8090 포트를 다른 프로그램이 쓰고 있으면 `-p 8081:80`처럼 호스트 포트만 바꿔서 실행
+* 8080/8081/8090 포트를 다른 프로그램이 쓰고 있으면 `-p 8082:80`처럼 호스트 포트만 바꿔서 실행
 * Windows에서는 WSL2 Ubuntu의 홈 디렉토리(`~`)에 clone해서 실행 (`/mnt/c` 아래에서는 `chmod`가 반영되지 않음)
 * Docker 데몬이 실행 중이어야 함 (`docker info`로 확인)
 * 메모리가 작은 환경에서는 다 쓴 컨테이너를 `docker rm -f`로 정리
