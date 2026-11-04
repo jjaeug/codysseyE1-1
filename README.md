@@ -3,9 +3,9 @@
 터미널, Docker, Git을 직접 세팅하고 **실행 결과(로그·접속·데이터 유지)로 동작을 검증**한 기록입니다.
 이 문서만 읽어도 전체 수행 내용과 증거를 확인할 수 있도록 정리했습니다.
 
-- 저장소: https://github.com/jjaeug/codysseyE1-1
-- 스크린샷: [`p/`](p/) 폴더 (브라우저 접속, GitHub, VSCode 화면)
-- 터미널 증거: 각 절의 코드블록 (명령어 + 출력)
+* 저장소: https://github.com/jjaeug/codysseyE1-1
+* 스크린샷: [`p/`](p/) 폴더 (브라우저 접속, GitHub, VSCode 화면)
+* 터미널 증거: 각 절의 코드블록 (명령어 + 출력)
 
 ## 목차
 
@@ -31,9 +31,10 @@
 
 ## 1. 프로젝트 개요
 
-- **목표**: 코드가 "내 컴퓨터에서만" 돌아가는 문제를 줄이기 위해, 누구나 같은 방식으로 실행·배포·디버깅할 수 있는 개발 환경을 직접 구성한다.
-- **사용 도구**: 리눅스 CLI(터미널), Docker(컨테이너), Git/GitHub(버전 관리·협업)
-- **수행 범위**
+* **목표**: 코드가 "내 컴퓨터에서만" 돌아가는 문제를 줄이기 위해, 누구나 같은 방식으로 실행·배포·디버깅할 수 있는 개발 환경을 직접 구성한다.
+* **사용 도구**: 리눅스 CLI(터미널), Docker(컨테이너), Git/GitHub(버전 관리·협업)
+* **수행 범위**
+
   1. 터미널로 작업 디렉토리를 만들고 파일·권한을 다룬다.
   2. Docker를 설치·점검하고 컨테이너를 실행·관리한다(이미지, 로그, 리소스).
   3. Dockerfile로 커스텀 이미지를 만들고, 포트 매핑으로 접속을 확인한다.
@@ -42,15 +43,15 @@
 
 ## 2. 실행 환경
 
-| 항목 | 값 |
-|---|---|
-| OS | Ubuntu 24.04.4 LTS (Windows WSL2, 커널 `6.6.87.2-microsoft-standard-WSL2`) |
-| Shell | bash |
-| Terminal | WSL Ubuntu 터미널 / VSCode 통합 터미널 (WSL 연결) |
-| Docker | Docker Engine (`docker.io` 패키지, WSL 내부 설치) — 버전은 [7절](#7-docker-설치-및-점검) 출력 참고 |
-| Git | 2.43.0 |
-| 메모리 | PC 3.4GB / WSL 할당 약 1.5GB |
-| 작업 디렉토리 | `~/dev-mission` (= `/home/jjw/dev-mission`) |
+|항목|값|
+|-|-|
+|OS|Ubuntu 24.04.4 LTS (Windows WSL2, 커널 `6.6.87.2-microsoft-standard-WSL2`)|
+|Shell|bash|
+|Terminal|WSL Ubuntu 터미널|
+|Docker|Docker Engine 29.1.3 (`docker.io` 패키지, WSL 내부 설치)|
+|Git|2.43.0|
+|메모리|PC 3.4GB / WSL 할당 약 1.5GB|
+|작업 디렉토리|`~/dev-mission` (= `/home/jjw/dev-mission`)|
 
 환경 확인 명령:
 
@@ -62,10 +63,14 @@ docker --version
 git --version
 ```
 
-> ⚠️ **TODO**: 위 명령의 실제 출력을 아래 블록에 붙여넣기
-
 ```text
-(실행 결과 붙여넣기)
+$ cat /etc/os-release | head -2; uname -r; echo $SHELL; docker --version; git --version
+PRETTY_NAME="Ubuntu 24.04.4 LTS"
+NAME="Ubuntu"
+6.6.87.2-microsoft-standard-WSL2
+/bin/bash
+Docker version 29.1.3, build 29.1.3-0ubuntu3~24.04.2
+git version 2.43.0
 ```
 
 > **개인 PC 종속 주의**
@@ -75,34 +80,34 @@ git --version
 
 ## 3. 수행 체크리스트
 
-- [ ] 터미널 기본 조작 및 폴더 구성
-- [ ] 권한 변경 실습 (파일 1개, 디렉토리 1개)
-- [ ] Docker 설치 및 점검
-- [ ] Docker 기본 운영 명령 (`images` / `ps` / `logs` / `stats`)
-- [ ] `hello-world` 실행
-- [ ] `ubuntu` 컨테이너 진입 후 명령 실행
-- [ ] 컨테이너 종료/유지 (attach / exec) 차이 관찰
-- [ ] Dockerfile 커스텀 이미지 빌드 및 실행
-- [ ] 포트 매핑 접속 (8080, 8090 — 2회)
-- [ ] 바인드 마운트 변경 반영
-- [ ] 볼륨 영속성 검증
-- [ ] Git 사용자 정보·기본 브랜치 설정 + GitHub 저장소 연동
-- [ ] VSCode GitHub 로그인 및 저장소 연동
+- [x] 터미널 기본 조작 및 폴더 구성
+- [x] 권한 변경 실습 (파일 1개, 디렉토리 1개)
+- [x] Docker 설치 및 점검
+- [x] Docker 기본 운영 명령 (`images` / `ps` / `logs` / `stats`)
+- [x] `hello-world` 실행
+- [x] `ubuntu` 컨테이너 진입 후 명령 실행
+- [x] 컨테이너 종료/유지 (attach / exec) 차이 관찰
+- [x] Dockerfile 커스텀 이미지 빌드 및 실행
+- [x] 포트 매핑 접속 (8080, 8090 — 2회)
+- [x] 바인드 마운트 변경 반영
+- [x] 볼륨 영속성 검증
+- [x] Git 사용자 정보·기본 브랜치 설정 + GitHub 저장소 연동
+- [x] VSCode GitHub 로그인 및 저장소 연동
 
 ## 4. 검증 방법 요약
 
-| 항목 | 확인 명령 | 확인 기준 | 증거 |
-|---|---|---|---|
-| 터미널 조작 | `pwd`, `ls -la`, `mkdir`, `cp`, `mv`, `rm`, `cat`, `touch` | 생성·복사·이동·삭제가 `ls` 결과에 반영됨 | [5절](#5-터미널-기본-조작) |
-| 권한 | `ls -l`, `chmod 755`, `chmod 700` | 변경 전/후 권한 문자열이 달라짐 | [6절](#6-파일-권한-실습) |
-| Docker 점검 | `docker --version`, `docker info` | 버전 출력, `Server Version` 표시(데몬 동작) | [7절](#7-docker-설치-및-점검) |
-| 운영 명령 | `docker images`, `docker ps -a`, `docker logs`, `docker stats` | 이미지·컨테이너 목록, 접속 로그, CPU/메모리 사용량 | [8절](#8-docker-기본-운영-명령) |
-| hello-world | `docker run hello-world` | `Hello from Docker!` 출력 | [9절](#9-컨테이너-실행-실습) |
-| 커스텀 이미지 | `docker build -t my-ubuntu .`, `docker run my-ubuntu` | 빌드 성공, CMD 메시지 출력 | [10절](#10-dockerfile-커스텀-이미지) |
-| 포트 매핑 | `docker run -p 8080:80 ...`, 브라우저/`curl` 접속 | `localhost:8080`, `localhost:8090`에서 nginx 응답 | [11절](#11-포트-매핑), [p/browser-8080.png](p/browser-8080.png), [p/browser-8090.png](p/browser-8090.png) |
-| 바인드 마운트 | `docker run -v $(pwd)/bind-test:...`, `curl localhost:8090` | 호스트 파일 수정이 재시작 없이 반영 | [12절](#12-바인드-마운트) |
-| 볼륨 | `docker volume create`, 컨테이너 삭제 후 재연결 | 새 컨테이너에서 기존 데이터 확인 | [13절](#13-docker-볼륨-영속성) |
-| Git | `git config --list`, `git remote -v` | `user.name`, `user.email`, `init.defaultBranch` 설정, 원격 저장소 연결 | [14절](#14-git-설정-및-github-연동), [p/2.png](p/2.png), [p/vscode-github.png](p/vscode-github.png) |
+|항목|확인 명령|확인 기준|증거|
+|-|-|-|-|
+|터미널 조작|`pwd`, `ls -la`, `mkdir`, `cp`, `mv`, `rm`, `cat`, `touch`|생성·복사·이동·삭제가 `ls` 결과에 반영됨|[5절](#5-터미널-기본-조작)|
+|권한|`ls -l`, `chmod 755`, `chmod 700`|변경 전/후 권한 문자열이 달라짐|[6절](#6-파일-권한-실습)|
+|Docker 점검|`docker --version`, `docker info`|버전 출력, `Server Version` 표시(데몬 동작)|[7절](#7-docker-설치-및-점검)|
+|운영 명령|`docker images`, `docker ps -a`, `docker logs`, `docker stats`|이미지·컨테이너 목록, 접속 로그, CPU/메모리 사용량|[8절](#8-docker-기본-운영-명령)|
+|hello-world|`docker run hello-world`|`Hello from Docker!` 출력|[9절](#9-컨테이너-실행-실습)|
+|커스텀 이미지|`docker build -t my-ubuntu .`, `docker run my-ubuntu`|빌드 성공, CMD 메시지 출력|[10절](#10-dockerfile-커스텀-이미지)|
+|포트 매핑|`docker run -p 8080:80 ...`, 브라우저/`curl` 접속|`localhost:8080`, `localhost:8090`에서 nginx 응답|[11절](#11-포트-매핑), [p/browser-8080.png](p/browser-8080.png), [p/browser-8090.png](p/browser-8090.png)|
+|바인드 마운트|`docker run -v $(pwd)/bind-test:...`, `curl localhost:8090`|호스트 파일 수정이 재시작 없이 반영|[12절](#12-바인드-마운트)|
+|볼륨|`docker volume create`, 컨테이너 삭제 후 재연결|새 컨테이너에서 기존 데이터 확인|[13절](#13-docker-볼륨-영속성)|
+|Git|`git config --list`, `git remote -v`|`user.name`, `user.email`, `init.defaultBranch` 설정, 원격 저장소 연결|[14절](#14-git-설정-및-github-연동), [p/2.png](p/2.png), [p/vscode-github.png](p/vscode-github.png)|
 
 ---
 
@@ -110,10 +115,10 @@ git --version
 
 ### 개념: 절대 경로 vs 상대 경로
 
-| 구분 | 기준 | 예시 |
-|---|---|---|
-| 절대 경로 | 루트 `/`부터 전체 위치를 적음. 현재 위치와 상관없이 항상 같은 곳을 가리킴 | `/home/jjw/dev-mission/hello.txt` |
-| 상대 경로 | **현재 위치(`pwd`)** 기준. `.`은 현재 폴더, `..`은 상위 폴더 | `./hello.txt`, `../dev-mission/hello.txt` |
+|구분|기준|예시|
+|-|-|-|
+|절대 경로|루트 `/`부터 전체 위치를 적음. 현재 위치와 상관없이 항상 같은 곳을 가리킴|`/home/jjw/dev-mission/hello.txt`|
+|상대 경로|**현재 위치(`pwd`)** 기준. `.`은 현재 폴더, `..`은 상위 폴더|`./hello.txt`, `../dev-mission/hello.txt`|
 
 예: `~/dev-mission`에 있을 때 `cat hello.txt`와 `cat /home/jjw/dev-mission/hello.txt`는 같은 파일을 읽지만, `cd /tmp`로 이동하면 상대 경로 `hello.txt`는 찾을 수 없습니다.
 
@@ -139,10 +144,48 @@ ls -la
 cd ..
 ```
 
-> ⚠️ **TODO**: 위 명령을 실행한 터미널 출력(명령어 + 결과)을 그대로 붙여넣기
-
 ```text
-(실행 결과 붙여넣기)
+jjw@DESKTOP-I2K2FML:~/dev-mission$ pwd
+/home/jjw/dev-mission
+jjw@DESKTOP-I2K2FML:~/dev-mission$ ls -la
+total 64
+drwxr-xr-x 5 jjw jjw  4096 Nov  4 23:43 .
+drwxr-x--- 6 jjw jjw  4096 Nov  4 23:43 ..
+drwxr-xr-x 8 jjw jjw  4096 Nov  4 23:43 .git
+-rw-r--r-- 1 jjw jjw   107 Nov  4 23:13 Dockerfile
+-rw-r--r-- 1 jjw jjw 33856 Nov  5 00:54 README.md
+drwxr-xr-x 2 jjw jjw  4096 Nov  4 23:13 bind-test
+-rw-r--r-- 1 jjw jjw    34 Nov  4 23:13 hello.txt
+drwxr-xr-x 2 jjw jjw  4096 Nov  5 00:35 p
+-rwxr-xr-x 1 jjw jjw     0 Nov  4 23:13 permission-test.txt
+jjw@DESKTOP-I2K2FML:~/dev-mission$ mkdir -p practice/sub
+jjw@DESKTOP-I2K2FML:~/dev-mission$ cd practice
+jjw@DESKTOP-I2K2FML:~/dev-mission/practice$ pwd
+/home/jjw/dev-mission/practice
+jjw@DESKTOP-I2K2FML:~/dev-mission/practice$ touch empty.txt
+jjw@DESKTOP-I2K2FML:~/dev-mission/practice$ ls -l empty.txt
+-rw-r--r-- 1 jjw jjw 0 Nov  5 00:57 empty.txt
+jjw@DESKTOP-I2K2FML:~/dev-mission/practice$ echo "Hello, Terminal!" > hello.txt
+jjw@DESKTOP-I2K2FML:~/dev-mission/practice$ cat hello.txt
+Hello, Terminal!
+jjw@DESKTOP-I2K2FML:~/dev-mission/practice$ cp hello.txt hello-copy.txt
+jjw@DESKTOP-I2K2FML:~/dev-mission/practice$ mv hello-copy.txt renamed.txt
+jjw@DESKTOP-I2K2FML:~/dev-mission/practice$ mv renamed.txt sub/
+jjw@DESKTOP-I2K2FML:~/dev-mission/practice$ ls -la sub/
+total 12
+drwxr-xr-x 2 jjw jjw 4096 Nov  5 00:58 .
+drwxr-xr-x 3 jjw jjw 4096 Nov  5 00:58 ..
+-rw-r--r-- 1 jjw jjw   17 Nov  5 00:58 renamed.txt
+jjw@DESKTOP-I2K2FML:~/dev-mission/practice$ rm sub/renamed.txt
+jjw@DESKTOP-I2K2FML:~/dev-mission/practice$ rm -r sub
+jjw@DESKTOP-I2K2FML:~/dev-mission/practice$ ls -la
+total 12
+drwxr-xr-x 2 jjw jjw 4096 Nov  5 00:58 .
+drwxr-xr-x 6 jjw jjw 4096 Nov  5 00:55 ..
+-rw-r--r-- 1 jjw jjw    0 Nov  5 00:57 empty.txt
+-rw-r--r-- 1 jjw jjw   17 Nov  5 00:57 hello.txt
+jjw@DESKTOP-I2K2FML:~/dev-mission/practice$ cd ..
+jjw@DESKTOP-I2K2FML:~/dev-mission$
 ```
 
 ## 6. 파일 권한 실습
@@ -151,19 +194,19 @@ cd ..
 
 `ls -l` 결과의 `-rwxr-xr-x`는 맨 앞 1글자(파일 종류: `-` 파일, `d` 디렉토리) 뒤에 **소유자 / 그룹 / 기타 사용자** 순서로 3글자씩 권한을 나타냅니다.
 
-| 권한 | 숫자 | 파일에서 | 디렉토리에서 |
-|---|---|---|---|
-| `r` | 4 | 내용 읽기 | 목록 보기 (`ls`) |
-| `w` | 2 | 내용 수정 | 안에 파일 생성·삭제 |
-| `x` | 1 | 실행 | 들어가기 (`cd`) |
+|권한|숫자|파일에서|디렉토리에서|
+|-|-|-|-|
+|`r`|4|내용 읽기|목록 보기 (`ls`)|
+|`w`|2|내용 수정|안에 파일 생성·삭제|
+|`x`|1|실행|들어가기 (`cd`)|
 
 각 자리 숫자는 4 + 2 + 1을 더한 값입니다.
 
-| 숫자 | 문자 | 해석 |
-|---|---|---|
-| `755` | `rwxr-xr-x` | 소유자 7(rwx), 그룹 5(r-x), 기타 5(r-x) → 소유자만 수정, 모두 읽기·실행 가능 (스크립트, 공용 디렉토리) |
-| `644` | `rw-r--r--` | 소유자 6(rw-), 그룹 4(r--), 기타 4(r--) → 소유자만 수정, 모두 읽기 가능 (일반 문서의 기본값) |
-| `700` | `rwx------` | 소유자만 모든 권한, 나머지는 접근 불가 (개인 디렉토리) |
+|숫자|문자|해석|
+|-|-|-|
+|`755`|`rwxr-xr-x`|소유자 7(rwx), 그룹 5(r-x), 기타 5(r-x) → 소유자만 수정, 모두 읽기·실행 가능 (스크립트, 공용 디렉토리)|
+|`644`|`rw-r--r--`|소유자 6(rw-), 그룹 4(r--), 기타 4(r--) → 소유자만 수정, 모두 읽기 가능 (일반 문서의 기본값)|
+|`700`|`rwx------`|소유자만 모든 권한, 나머지는 접근 불가 (개인 디렉토리)|
 
 ### 실행 명령
 
@@ -183,16 +226,25 @@ chmod 700 perm-dir
 ls -ld perm-dir         # 변경 후
 ```
 
-> ⚠️ **TODO**: 변경 전/후 `ls -l` 출력을 붙여넣고 아래 표 채우기
-
 ```text
-(실행 결과 붙여넣기)
+$ touch perm-file.txt
+$ ls -l perm-file.txt
+-rw-r--r-- 1 jjw jjw 0 Nov  5 01:01 perm-file.txt
+$ chmod 755 perm-file.txt
+$ ls -l perm-file.txt
+-rwxr-xr-x 1 jjw jjw 0 Nov  5 01:01 perm-file.txt
+$ mkdir perm-dir
+$ ls -ld perm-dir
+drwxr-xr-x 2 jjw jjw 4096 Nov  5 01:01 perm-dir
+$ chmod 700 perm-dir
+$ ls -ld perm-dir
+drwx------ 2 jjw jjw 4096 Nov  5 01:01 perm-dir
 ```
 
-| 대상 | 변경 전 | 변경 후 |
-|---|---|---|
-| `perm-file.txt` | (TODO) | (TODO) |
-| `perm-dir/` | (TODO) | (TODO) |
+|대상|변경 전|변경 후|
+|-|-|-|
+|`perm-file.txt`|`-rw-r--r--` (644)|`-rwxr-xr-x` (755)|
+|`perm-dir/`|`drwxr-xr-x` (755)|`drwx------` (700)|
 
 ### 추가 증거: Git에 기록된 실행 권한
 
@@ -225,10 +277,26 @@ docker --version   # 클라이언트 버전 확인
 docker info        # 데몬 동작 여부 (Server Version, Containers, Images 등이 나오면 정상)
 ```
 
-> ⚠️ **TODO**: 두 명령의 출력을 붙여넣기 (`docker info`는 `Server Version`, `Containers`, `Images`, `Storage Driver` 부분 발췌 가능)
-
 ```text
-(실행 결과 붙여넣기)
+$ docker --version
+Docker version 29.1.3, build 29.1.3-0ubuntu3~24.04.2
+
+$ docker info   (발췌)
+Server:
+ Containers: 1
+  Running: 0
+  Paused: 0
+  Stopped: 1
+ Images: 1
+ Server Version: 29.1.3
+ Storage Driver: overlayfs
+ Cgroup Driver: systemd
+ Kernel Version: 6.6.87.2-microsoft-standard-WSL2
+ Operating System: Ubuntu 24.04.4 LTS
+ Architecture: x86_64
+ CPUs: 4
+ Total Memory: 1.549GiB
+ Docker Root Dir: /var/lib/docker
 ```
 
 ## 8. Docker 기본 운영 명령
@@ -239,7 +307,11 @@ docker info        # 데몬 동작 여부 (Server Version, Containers, Images �
 
 ```text
 $ docker images
-(TODO: 실행 결과 붙여넣기)
+                                                                                                    i Info →   U  In Use
+IMAGE                ID             DISK USAGE   CONTENT SIZE   EXTRA
+hello-world:latest   c567b231f656       25.9kB         9.49kB
+nginx:latest         5ab5b0b01097        243MB         66.8MB    U
+ubuntu:22.04         076e7bf82319        119MB         31.7MB
 ```
 
 ### 컨테이너 목록 — `docker ps` / `docker ps -a`
@@ -248,7 +320,8 @@ $ docker images
 
 ```text
 $ docker ps -a
-(TODO: 실행 결과 붙여넣기)
+CONTAINER ID   IMAGE     COMMAND                  CREATED         STATUS         PORTS                                     NAMES
+2e28c7291f82   nginx     "/docker-entrypoint.…"   7 minutes ago   Up 7 minutes   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   test-nginx
 ```
 
 ### 로그 확인 — `docker logs test-nginx`
@@ -257,7 +330,14 @@ $ docker ps -a
 
 ```text
 $ docker logs test-nginx
-(TODO: 실행 결과 붙여넣기)
+/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+2026/11/04 15:13:33 [notice] 1#1: nginx/1.31.8
+2026/11/04 15:13:33 [notice] 1#1: OS: Linux 6.6.87.2-microsoft-standard-WSL2
+2026/11/04 15:13:33 [notice] 1#1: start worker processes
+172.17.0.1 - - [04/Nov/2026:15:14:12 +0000] "GET / HTTP/1.1" 200 896 "-" "curl/8.5.0" "-"
+172.17.0.1 - - [04/Nov/2026:15:15:04 +0000] "GET / HTTP/1.1" 200 896 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36 Edg/156.0.0.0" "-"
+2026/11/04 15:15:04 [error] 30#30: *2 open() "/usr/share/nginx/html/favicon.ico" failed (2: No such file or directory), client: 172.17.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "localhost:8080", referrer: "http://localhost:8080/"
+172.17.0.1 - - [04/Nov/2026:15:15:04 +0000] "GET /favicon.ico HTTP/1.1" 404 555 "http://localhost:8080/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36 Edg/156.0.0.0" "-"
 ```
 
 ### 리소스 확인 — `docker stats --no-stream`
@@ -266,7 +346,8 @@ $ docker logs test-nginx
 
 ```text
 $ docker stats --no-stream
-(TODO: 실행 결과 붙여넣기)
+CONTAINER ID   NAME         CPU %     MEM USAGE / LIMIT     MEM %     NET I/O           BLOCK I/O     PIDS
+2e28c7291f82   test-nginx   0.00%     4.852MiB / 1.549GiB   0.31%     4.47kB / 4.71kB   0B / 12.3kB   5
 ```
 
 ### 컨테이너 중지/재시작
@@ -278,10 +359,17 @@ docker start test-nginx
 docker ps           # 다시 Up 상태 확인
 ```
 
-> ⚠️ **TODO**: 실행 결과 붙여넣기
-
 ```text
-(실행 결과 붙여넣기)
+$ docker stop test-nginx
+test-nginx
+$ docker ps -a
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS                      PORTS     NAMES
+2e28c7291f82   nginx     "/docker-entrypoint.…"   11 minutes ago   Exited (0) 37 seconds ago             test-nginx
+$ docker start test-nginx
+test-nginx
+$ docker ps
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS         PORTS                                     NAMES
+2e28c7291f82   nginx     "/docker-entrypoint.…"   12 minutes ago   Up 4 seconds   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   test-nginx
 ```
 
 ## 9. 컨테이너 실행 실습
@@ -292,7 +380,15 @@ docker ps           # 다시 Up 상태 확인
 
 ```text
 $ docker run hello-world
-(TODO: 실행 결과 붙여넣기 — "Hello from Docker!"까지)
+Unable to find image 'hello-world:latest' locally
+latest: Pulling from library/hello-world
+4f55086f7dd0: Pull complete
+d5e71e642bf5: Download complete
+Digest: sha256:c567b231f65614688711a75f31518a064258a51d442117a3e771a3a8fdba78ef
+Status: Downloaded newer image for hello-world:latest
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
 ```
 
 ### ubuntu 컨테이너 진입
@@ -305,19 +401,29 @@ echo "hello from container"
 exit
 ```
 
-> ⚠️ **TODO**: 실행 결과 붙여넣기
-
 ```text
-(실행 결과 붙여넣기)
+$ docker run -it --name ubuntu-test ubuntu:22.04 bash
+Unable to find image 'ubuntu:22.04' locally
+22.04: Pulling from library/ubuntu
+0626d3cc316c: Pull complete
+ae52aad3a114: Download complete
+Digest: sha256:076e7bf82319619f28dd0aa9c02ab34b055ad37100395b4f49a2ffba04fb5e11
+Status: Downloaded newer image for ubuntu:22.04
+root@7f0dc732f858:/# ls
+bin  boot  dev  etc  home  lib  lib32  lib64  libx32  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+root@7f0dc732f858:/# echo "hello from container"
+hello from container
+root@7f0dc732f858:/# exit
+exit
 ```
 
 ### 컨테이너 종료/유지 차이 (attach vs exec)
 
-| 방식 | 동작 | `exit` 했을 때 |
-|---|---|---|
-| `docker run -it` / `docker attach` | 컨테이너의 **메인 프로세스(PID 1, 여기선 bash)** 에 직접 연결 | 메인 프로세스가 끝나므로 **컨테이너도 종료(Exited)** |
-| `Ctrl+P` → `Ctrl+Q` | attach 상태에서 연결만 끊기(detach) | 컨테이너는 **계속 실행** |
-| `docker exec -it <이름> bash` | 실행 중인 컨테이너 안에 **새 프로세스**를 하나 더 띄움 | 그 프로세스만 끝나고 **컨테이너는 계속 실행** |
+|방식|동작|`exit` 했을 때|
+|-|-|-|
+|`docker run -it` / `docker attach`|컨테이너의 **메인 프로세스(PID 1, 여기선 bash)** 에 직접 연결|메인 프로세스가 끝나므로 **컨테이너도 종료(Exited)**|
+|`Ctrl+P` → `Ctrl+Q`|attach 상태에서 연결만 끊기(detach)|컨테이너는 **계속 실행**|
+|`docker exec -it <이름> bash`|실행 중인 컨테이너 안에 **새 프로세스**를 하나 더 띄움|그 프로세스만 끝나고 **컨테이너는 계속 실행**|
 
 관찰용 명령:
 
@@ -329,18 +435,34 @@ docker attach keep-test          # 안에서 exit
 docker ps -a                     # keep-test Exited
 ```
 
-> ⚠️ **TODO**: 위 관찰 결과 붙여넣기
-
 ```text
-(실행 결과 붙여넣기)
+$ docker run -dit --name keep-test ubuntu:22.04 bash
+b150e1b5a8cd2a02d89c730cb7e0f53dce2de68caaa360551e850999efe028de
+$ docker exec -it keep-test bash
+root@b150e1b5a8cd:/# exit
+exit
+$ docker ps
+CONTAINER ID   IMAGE          COMMAND   CREATED          STATUS          PORTS     NAMES
+b150e1b5a8cd   ubuntu:22.04   "bash"    21 seconds ago   Up 20 seconds             keep-test
+$ docker attach keep-test
+root@b150e1b5a8cd:/# exit
+exit
+$ docker ps -a
+CONTAINER ID   IMAGE          COMMAND    CREATED          STATUS                      PORTS     NAMES
+b150e1b5a8cd   ubuntu:22.04   "bash"     52 seconds ago   Exited (0) 4 seconds ago              keep-test
+7f0dc732f858   ubuntu:22.04   "bash"     3 minutes ago    Exited (0) 2 minutes ago              ubuntu-test
+284b0aacafb2   hello-world    "/hello"   6 minutes ago    Exited (0) 6 minutes ago              vigorous_lovelace
+060ef008dcf3   hello-world    "/hello"   33 minutes ago   Exited (0) 33 minutes ago             nervous_neumann
 ```
+
+**관찰 결과**: `exec`로 들어갔다 `exit`해도 `keep-test`는 `Up` 상태로 유지됐고, `attach`로 들어가 `exit`하자 메인 프로세스(bash)가 끝나면서 `Exited (0)`으로 종료됐다.
 
 ## 10. Dockerfile 커스텀 이미지
 
 ### 선택한 방식과 베이스
 
-- **방식 (B)**: Linux 베이스 이미지 + 기능(패키지) 추가
-- **베이스 이미지**: `ubuntu:22.04` (Docker Hub 공식 이미지)
+* **방식 (B)**: Linux 베이스 이미지 + 기능(패키지) 추가
+* **베이스 이미지**: `ubuntu:22.04` (Docker Hub 공식 이미지)
 
 ### 작성한 Dockerfile
 
@@ -354,11 +476,11 @@ CMD ["echo", "Hello from my container!"]
 
 ### 커스텀 포인트와 목적
 
-| 줄 | 목적 |
-|---|---|
-| `FROM ubuntu:22.04` | `latest` 대신 버전 태그를 고정해 언제 빌드해도 같은 OS 버전이 나오도록 함 (재현성). 호스트(WSL)가 24.04여도 컨테이너는 이미지에 적힌 22.04로 동작 |
-| `RUN apt-get update && apt-get install -y curl` | 컨테이너 안에서 HTTP 요청을 확인할 수 있도록 `curl` 설치. `update`와 `install`을 한 줄로 묶어 오래된 패키지 목록 캐시가 재사용되는 문제를 막고, `-y`로 빌드 중 확인 질문을 자동 승인 |
-| `CMD ["echo", ...]` | 컨테이너 실행 시 기본 동작을 지정해 이미지가 정상 실행되는지 바로 확인 |
+|줄|목적|
+|-|-|
+|`FROM ubuntu:22.04`|`latest` 대신 버전 태그를 고정해 언제 빌드해도 같은 OS 버전이 나오도록 함 (재현성). 호스트(WSL)가 24.04여도 컨테이너는 이미지에 적힌 22.04로 동작|
+|`RUN apt-get update && apt-get install -y curl`|컨테이너 안에서 HTTP 요청을 확인할 수 있도록 `curl` 설치. `update`와 `install`을 한 줄로 묶어 오래된 패키지 목록 캐시가 재사용되는 문제를 막고, `-y`로 빌드 중 확인 질문을 자동 승인|
+|`CMD ["echo", ...]`|컨테이너 실행 시 기본 동작을 지정해 이미지가 정상 실행되는지 바로 확인|
 
 **이미지 vs 컨테이너**: 이미지는 실행에 필요한 파일·설정을 묶은 읽기 전용 템플릿이고, 컨테이너는 그 이미지로 띄운 실행 인스턴스입니다. 같은 이미지로 컨테이너를 여러 개 만들 수 있습니다.
 
@@ -369,7 +491,36 @@ buildx가 설치되어 있지 않으면 `DEPRECATED: The legacy builder is depre
 
 ```text
 $ docker build -t my-ubuntu .
-(TODO: 실행 결과 붙여넣기 — 성공 메시지까지)
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon    854kB
+Step 1/3 : FROM ubuntu:22.04
+ ---> 076e7bf82319
+Step 2/3 : RUN apt-get update && apt-get install -y curl
+ ---> Running in 88cee4319b8a
+Get:1 http://archive.ubuntu.com/ubuntu jammy InRelease [270 kB]
+...(패키지 목록 다운로드 생략)
+Fetched 49.2 MB in 15s (3354 kB/s)
+The following NEW packages will be installed:
+  ca-certificates curl libbrotli1 libcurl4 libldap-2.5-0 libldap-common
+  libnghttp2-14 libpsl5 librtmp1 libsasl2-2 libsasl2-modules
+  libsasl2-modules-db libssh-4 openssl publicsuffix
+0 upgraded, 15 newly installed, 0 to remove and 1 not upgraded.
+...(패키지 설치 로그 생략)
+debconf: unable to initialize frontend: Dialog
+debconf: (TERM is not set, so the dialog frontend is not usable.)
+...
+Setting up curl (7.81.0-1ubuntu1.30) ...
+ ---> Removed intermediate container 88cee4319b8a
+ ---> b1a9f6e30039
+Step 3/3 : CMD ["echo", "Hello from my container!"]
+ ---> Running in c5993c5afae9
+ ---> Removed intermediate container c5993c5afae9
+ ---> 88656189c6b5
+Successfully built 88656189c6b5
+Successfully tagged my-ubuntu:latest
 ```
 
 ### 실행
@@ -379,10 +530,14 @@ docker run --rm my-ubuntu                   # CMD 메시지 확인
 docker run --rm my-ubuntu curl --version    # 추가한 curl 동작 확인
 ```
 
-> ⚠️ **TODO**: 실행 결과 붙여넣기 (예상: `Hello from my container!`, `curl 7.x ...`)
-
 ```text
-(실행 결과 붙여넣기)
+$ docker run --rm my-ubuntu
+Hello from my container!
+$ docker run --rm my-ubuntu curl --version
+curl 7.81.0 (x86_64-pc-linux-gnu) libcurl/7.81.0 OpenSSL/3.0.2 zlib/1.2.11 brotli/1.0.9 zstd/1.4.8 libidn2/2.3.2 libpsl/0.21.0 (+libidn2/2.3.2) libssh/0.9.6/openssl/zlib nghttp2/1.43.0 librtmp/2.3 OpenLDAP/2.5.20
+Release-Date: 2022-01-05
+Protocols: dict file ftp ftps gopher gophers http https imap imaps ldap ldaps mqtt pop3 pop3s rtmp rtsp scp sftp smb smbs smtp smtps telnet tftp
+Features: alt-svc AsynchDNS brotli GSS-API HSTS HTTP2 HTTPS-proxy IDN IPv6 Kerberos Largefile libz NTLM NTLM_WB PSL SPNEGO SSL TLS-SRP UnixSockets zstd
 ```
 
 ## 11. 포트 매핑
@@ -401,22 +556,44 @@ docker run -d --name test-nginx -p 8080:80 nginx
 
 ```text
 $ curl http://localhost:8080
-(TODO: 실행 결과 붙여넣기 — "Welcome to nginx!" HTML)
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, nginx is successfully installed and working.
+Further configuration is required for the web server, reverse proxy,
+API gateway, load balancer, content cache, or other features.</p>
+
+<p>For online documentation and support please refer to
+<a href="https://nginx.org/">nginx.org</a>.<br/>
+To engage with the community please visit
+<a href="https://community.nginx.org/">community.nginx.org</a>.<br/>
+For enterprise grade support, professional services, additional
+security features and capabilities please refer to
+<a href="https://f5.com/nginx">f5.com/nginx</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
 ```
 
 브라우저 접속 화면 (주소창 `localhost:8080` 포함):
 
-> ⚠️ **TODO**: 브라우저 `localhost:8080` 화면을 `p/browser-8080.png`로 저장한 뒤 아래 줄 앞의 `<!--`, `-->` 지우기
-
-<!-- ![localhost:8080](./p/browser-8080.png) -->
+![localhost:8080](./p/browser-8080.png)
 
 ### 접속 2: 8090 → 80
 
 `bind-nginx` 컨테이너를 8090 포트로 실행했습니다. ([12절](#12-바인드-마운트))
 
-> ⚠️ **TODO**: 브라우저 `localhost:8090` 화면을 `p/browser-8090.png`로 저장한 뒤 아래 줄 앞의 `<!--`, `-->` 지우기
-
-<!-- ![localhost:8090](./p/browser-8090.png) -->
+![localhost:8090](./p/browser-8090.png)
 
 ## 12. 바인드 마운트
 
@@ -443,17 +620,22 @@ echo '<h1>Hello, Changed!</h1>' > bind-test/index.html
 curl http://localhost:8090      # 변경 후 (컨테이너 재시작 없음)
 ```
 
-| 시점 | 호스트 `bind-test/index.html` | `localhost:8090` 응답 |
-|---|---|---|
-| 변경 전 | `<h1>Hello from Host!</h1>` | `Hello from Host!` |
-| 변경 후 | `<h1>Hello, Changed!</h1>` | `Hello, Changed!` (재시작 없이 즉시 반영) |
+|시점|호스트 `bind-test/index.html`|`localhost:8090` 응답|
+|-|-|-|
+|변경 전|`<h1>Hello from Host!</h1>`|`Hello from Host!`|
+|변경 후|`<h1>Hello, Changed!</h1>`|`Hello, Changed!` (재시작 없이 즉시 반영)|
 
 현재 저장소의 [`bind-test/index.html`](bind-test/index.html)은 변경 후 상태(`Hello, Changed!`)입니다.
 
-> ⚠️ **TODO**: 변경 전/후 `curl` 출력을 붙여넣기
-
 ```text
-(실행 결과 붙여넣기)
+$ docker run -d --name bind-nginx -p 8090:80 -v "$(pwd)/bind-test":/usr/share/nginx/html nginx
+fef654d1785167d193b0b7dd5da5b193ee6f801b070548192708ccf928d0eb2b
+$ echo '<h1>Hello from Host!</h1>' > bind-test/index.html
+$ curl http://localhost:8090
+<h1>Hello from Host!</h1>
+$ echo '<h1>Hello, Changed!</h1>' > bind-test/index.html
+$ curl http://localhost:8090
+<h1>Hello, Changed!</h1>
 ```
 
 ## 13. Docker 볼륨 영속성
@@ -463,11 +645,11 @@ curl http://localhost:8090      # 변경 후 (컨테이너 재시작 없음)
 컨테이너 안에서 만든 파일은 컨테이너의 쓰기 레이어에 저장되어, **컨테이너를 삭제하면 함께 사라집니다.**
 볼륨은 Docker가 컨테이너 밖에서 따로 관리하는 저장 공간이라, 컨테이너를 지우고 새로 만들어도 같은 볼륨을 연결하면 데이터가 남아 있습니다.
 
-| 구분 | 바인드 마운트 | 볼륨 |
-|---|---|---|
-| 저장 위치 | 내가 지정한 호스트 폴더 | Docker가 관리하는 영역 |
-| 주 용도 | 개발 중 소스 수정 즉시 반영 | DB 데이터 등 영속 데이터 보관 |
-| 예시 | `-v $(pwd)/bind-test:/usr/share/nginx/html` | `-v my-volume:/data` |
+|구분|바인드 마운트|볼륨|
+|-|-|-|
+|저장 위치|내가 지정한 호스트 폴더|Docker가 관리하는 영역|
+|주 용도|개발 중 소스 수정 즉시 반영|DB 데이터 등 영속 데이터 보관|
+|예시|`-v $(pwd)/bind-test:/usr/share/nginx/html`|`-v my-volume:/data`|
 
 ### 생성 → 연결 → 쓰기 → 삭제 → 재연결
 
@@ -476,7 +658,8 @@ docker volume create my-volume
 docker volume ls
 
 # 1) 첫 번째 컨테이너에서 데이터 쓰기
-docker run -it --name volume-test -v my-volume:/data ubuntu:22.04 bash
+#    (LANG=C.UTF-8: 컨테이너 안에서 한글 입력 → 트러블슈팅 케이스 3)
+docker run -it --name volume-test -e LANG=C.UTF-8 -v my-volume:/data ubuntu:22.04 bash
 echo "볼륨 테스트 성공!" > /data/test.txt
 cat /data/test.txt
 exit
@@ -491,21 +674,39 @@ cat /data/test.txt
 exit
 ```
 
-> ⚠️ **TODO**: 위 과정 전체 출력 붙여넣기 (삭제 전 쓰기 → `docker rm` → 새 컨테이너에서 같은 내용이 나오는 것까지)
-
 ```text
-(실행 결과 붙여넣기)
+$ docker volume create my-volume
+my-volume
+$ docker volume ls
+DRIVER    VOLUME NAME
+local     my-volume
+$ docker run -it --name volume-test -e LANG=C.UTF-8 -v my-volume:/data ubuntu:22.04 bash
+root@2bafa584e8b4:/# echo "볼륨 테스트 성공!" > /data/test.txt
+root@2bafa584e8b4:/# cat /data/test.txt
+볼륨 테스트 성공!
+root@2bafa584e8b4:/# exit
+exit
+$ docker rm volume-test
+volume-test
+$ docker ps -a
+CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS                                     NAMES
+2e28c7291f82   nginx     "/docker-entrypoint.…"   32 minutes ago   Up 20 minutes   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   test-nginx
+$ docker run -it --name volume-test2 -v my-volume:/data ubuntu:22.04 bash
+root@d1d8c0ff17d5:/# cat /data/test.txt
+볼륨 테스트 성공!
+root@d1d8c0ff17d5:/# exit
+exit
 ```
 
 ## 14. Git 설정 및 GitHub 연동
 
 ### 개념: Git vs GitHub
 
-| 구분 | Git | GitHub |
-|---|---|---|
-| 정체 | 내 PC에서 동작하는 **버전 관리 도구** | Git 저장소를 올려두는 **원격 호스팅·협업 서비스** |
-| 하는 일 | 커밋으로 변경 이력 기록, 브랜치, 되돌리기 | 원격 백업, 공유, Pull Request, 이슈, 코드 리뷰 |
-| 인터넷 | 없어도 동작 | 필요 |
+|구분|Git|GitHub|
+|-|-|-|
+|정체|내 PC에서 동작하는 **버전 관리 도구**|Git 저장소를 올려두는 **원격 호스팅·협업 서비스**|
+|하는 일|커밋으로 변경 이력 기록, 브랜치, 되돌리기|원격 백업, 공유, Pull Request, 이슈, 코드 리뷰|
+|인터넷|없어도 동작|필요|
 
 둘은 `git push`(내 PC → GitHub), `git pull`(GitHub → 내 PC)로 연결됩니다.
 
@@ -521,7 +722,9 @@ git config --global init.defaultBranch main
 
 ```text
 $ git config --list | sed 's/\(user.email=\).*/\1****@gmail.com/'
-(TODO: 실행 결과 붙여넣기 — user.name, user.email(가림), init.defaultBranch=main 포함)
+user.name=jjaeug
+user.email=****@gmail.com
+init.defaultbranch=main
 ```
 
 ### GitHub 저장소 연동
@@ -538,7 +741,8 @@ git clone https://github.com/jjaeug/codysseyE1-1.git ~/dev-mission
 
 ```text
 $ git remote -v
-(TODO: 실행 결과 붙여넣기)
+origin  https://github.com/jjaeug/codysseyE1-1.git (fetch)
+origin  https://github.com/jjaeug/codysseyE1-1.git (push)
 ```
 
 GitHub 저장소 화면:
@@ -547,19 +751,18 @@ GitHub 저장소 화면:
 
 ### VSCode 연동
 
-WSL에서 `code .`로 VSCode를 열어 GitHub 계정으로 로그인하고, 소스 제어 패널에서 커밋·push했습니다.
+VSCode에서 GitHub 계정으로 로그인했고(왼쪽 아래 계정 메뉴에 `jjaeug (GitHub)` 표시), 소스 제어 패널에서 `main` 브랜치와 원격 저장소(GitHub)가 연결된 커밋 이력을 확인했습니다.
+노트북 메모리(3.4GB)가 작아 VSCode의 WSL 원격 연결 대신 Windows VSCode를 사용했습니다.
 
-> ⚠️ **TODO**: VSCode 소스 제어 패널 또는 왼쪽 아래 계정 메뉴(GitHub 로그인 상태) 화면을 `p/vscode-github.png`로 저장(이메일 가리기)한 뒤 아래 줄 앞의 `<!--`, `-->` 지우기
-
-<!-- ![VSCode GitHub 연동](./p/vscode-github.png) -->
+![VSCode GitHub 연동](./p/vscode-github.png)
 
 ## 15. 보안 및 개인정보 보호
 
-| 점검 항목 | 처리 |
-|---|---|
-| 이메일 주소 | `git config --list` 출력은 `sed`로 가려서 기록, VSCode 화면은 가림 처리 |
-| 비밀번호 / 토큰 / 개인키 | 문서·스크린샷에 포함하지 않음 |
-| GitHub 인증 정보 | VSCode의 GitHub 로그인 사용, 저장소 파일에 저장하지 않음 |
+|점검 항목|처리|
+|-|-|
+|이메일 주소|`git config --list` 출력은 `sed`로 가려서 기록, VSCode 화면은 가림 처리|
+|비밀번호 / 토큰 / 개인키|문서·스크린샷에 포함하지 않음|
+|GitHub 인증 정보|VSCode·GitHub CLI(`gh auth login`)의 브라우저 로그인 사용, 비밀번호·토큰을 터미널이나 저장소 파일에 직접 입력·저장하지 않음|
 
 민감정보가 노출된 경우의 대응 절차:
 
@@ -571,27 +774,47 @@ WSL에서 `code .`로 VSCode를 열어 GitHub 계정으로 로그인하고, 소�
 
 ### 케이스 1: 포트 충돌
 
-- **문제**: `test-nginx`가 실행 중인 상태에서 두 번째 nginx 컨테이너를 `-p 8080:80`으로 실행하자 실패했다.
-- **원인 가설**: 호스트의 8080 포트를 이미 다른 컨테이너가 사용하고 있다.
-- **확인**: `docker ps`의 PORTS 열에서 `test-nginx`가 `0.0.0.0:8080->80/tcp`를 사용 중인 것을 확인 ([8절](#8-docker-기본-운영-명령)).
-- **해결**: 두 번째 컨테이너(`bind-nginx`)의 호스트 포트를 8090으로 바꿔 실행 (`-p 8090:80`). 컨테이너 내부 포트 80은 그대로 둬도 된다.
-- **대안**: 기존 컨테이너가 필요 없으면 `docker stop test-nginx` 후 8080을 재사용.
+* **문제**: `test-nginx`가 실행 중인 상태에서 두 번째 nginx 컨테이너를 `-p 8080:80`으로 실행하자 실패했다.
+* **원인 가설**: 호스트의 8080 포트를 이미 다른 컨테이너가 사용하고 있다.
+* **확인**: `docker ps`의 PORTS 열에서 `test-nginx`가 `0.0.0.0:8080->80/tcp`를 사용 중인 것을 확인 ([8절](#8-docker-기본-운영-명령)).
+* **해결**: 두 번째 컨테이너(`bind-nginx`)의 호스트 포트를 8090으로 바꿔 실행 (`-p 8090:80`). 컨테이너 내부 포트 80은 그대로 둬도 된다.
+* **대안**: 기존 컨테이너가 필요 없으면 `docker stop test-nginx` 후 8080을 재사용.
 
 재현 로그 (`test-nginx` 실행 중일 때):
 
 ```text
 $ docker run -d --name conflict-test -p 8080:80 nginx
-(TODO: 실행 결과 붙여넣기 — "port is already allocated" 에러)
+38a5dee27a380e7fb2c3886f6d7894f7a84382d7cd08fa34a2f19008848a1000
+docker: Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint conflict-test (c15f0dd7252c...): Bind for 0.0.0.0:8080 failed: port is already allocated
+
+Run 'docker run --help' for more information
 $ docker rm conflict-test
+conflict-test
 ```
 
 ### 케이스 2: Dockerfile 빌드 중 apt-get 실패
 
-- **문제**: `RUN apt-get install curl` 단계에서 빌드가 실패했다.
-- **원인 가설**: `apt-get install`이 `Do you want to continue? [Y/n]` 확인을 요구하는데, `docker build`는 키보드 입력을 받을 수 없다.
-- **확인**: 빌드 로그에 `Do you want to continue? [Y/n] Abort.`가 출력된 뒤 RUN 단계가 `returned a non-zero code`로 종료됨 → 입력 대기로 멈춘 것이 아니라 자동 취소(Abort)된 것.
-- **해결**: `apt-get install -y curl`로 자동 승인 옵션을 추가해 빌드 성공.
-- **참고**: `tzdata`처럼 설치 중 설정 질문을 하는 패키지는 `ENV DEBIAN_FRONTEND=noninteractive`도 함께 지정해야 한다.
+* **문제**: `RUN apt-get install curl` 단계에서 빌드가 실패했다.
+* **원인 가설**: `apt-get install`이 `Do you want to continue? [Y/n]` 확인을 요구하는데, `docker build`는 키보드 입력을 받을 수 없다.
+* **확인**: 빌드 로그에 `Do you want to continue? [Y/n] Abort.`가 출력된 뒤 RUN 단계가 `returned a non-zero code`로 종료됨 → 입력 대기로 멈춘 것이 아니라 자동 취소(Abort)된 것.
+* **해결**: `apt-get install -y curl`로 자동 승인 옵션을 추가해 빌드 성공.
+* **참고**: `tzdata`처럼 설치 중 설정 질문을 하는 패키지는 `ENV DEBIAN_FRONTEND=noninteractive`도 함께 지정해야 한다. 실제로 이 빌드에서도 `debconf: unable to initialize frontend: Dialog` 경고가 출력되었다(10절 빌드 로그).
+
+### 케이스 3: 컨테이너 안에서 한글 입력이 깨짐
+
+- **문제**: ubuntu 컨테이너 bash에서 `echo "볼륨 테스트 성공!"`을 입력하자 한글이 `\353\263\274...` 같은 숫자 코드로 표시됐다.
+- **원인 가설**: `ubuntu:22.04` 이미지에는 언어(로케일) 설정이 없어서, bash가 한글(UTF-8)을 글자로 처리하지 못한다.
+- **확인**: 컨테이너 안에서 `echo $LANG` 실행 → 빈 값 출력 (로케일 미설정).
+- **해결**: `docker run -e LANG=C.UTF-8 ...`으로 환경변수를 지정해 실행 → 한글 정상 입력 ([13절](#13-docker-볼륨-영속성)).
+- **참고**: Dockerfile에서는 `ENV LANG=C.UTF-8`로 이미지에 기본 설정할 수 있다.
+
+### 케이스 4: git push 인증 실패
+
+- **문제**: `git push` 시 `Invalid username or token. Password authentication is not supported for Git operations.` 에러로 실패했다.
+- **원인 가설**: GitHub는 Git 작업에 계정 비밀번호 인증을 지원하지 않는데, 브라우저 로그인을 처리해 줄 자격 증명 도우미가 없어 비밀번호 방식으로 시도했다.
+- **확인**: `git config --get credential.helper` 결과는 `manager`(Git Credential Manager)인데, 해당 프로그램이 설치되어 있지 않았다.
+- **해결**: VSCode의 GitHub 로그인(브라우저 인증)으로 push. WSL에서는 GitHub CLI로 브라우저 인증 후 push (`sudo apt install -y gh` → `gh auth login`).
+- **주의**: 비밀번호나 토큰을 터미널·문서에 직접 붙여넣지 않는다 ([15절](#15-보안-및-개인정보-보호)).
 
 ## 17. 저장소 구성 및 재현 방법
 
@@ -636,7 +859,7 @@ docker volume rm my-volume
 
 주의사항:
 
-- 8080/8090 포트를 다른 프로그램이 쓰고 있으면 `-p 8081:80`처럼 호스트 포트만 바꿔서 실행
-- Windows에서는 WSL2 Ubuntu의 홈 디렉토리(`~`)에 clone해서 실행 (`/mnt/c` 아래에서는 `chmod`가 반영되지 않음)
-- Docker 데몬이 실행 중이어야 함 (`docker info`로 확인)
-- 메모리가 작은 환경에서는 다 쓴 컨테이너를 `docker rm -f`로 정리
+* 8080/8090 포트를 다른 프로그램이 쓰고 있으면 `-p 8081:80`처럼 호스트 포트만 바꿔서 실행
+* Windows에서는 WSL2 Ubuntu의 홈 디렉토리(`~`)에 clone해서 실행 (`/mnt/c` 아래에서는 `chmod`가 반영되지 않음)
+* Docker 데몬이 실행 중이어야 함 (`docker info`로 확인)
+* 메모리가 작은 환경에서는 다 쓴 컨테이너를 `docker rm -f`로 정리
