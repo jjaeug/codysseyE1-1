@@ -1,17 +1,43 @@
 # codysseyE1-1
-codysseyE1-1
 
-## 파일 권한 실습
+## 1. GitHub Repository + README.md
+- GitHub 저장소 생성 및 README.md 작성
+- git init, git remote add, git push 완료
 
-### 권한 변경 전
+## 2. 터미널 기본 명령어
+- `pwd` : 현재 경로 확인
+- `ls` : 파일 목록 확인
+- `mkdir` : 디렉토리 생성
+- `echo` : 텍스트 출력
+- `cat` : 파일 내용 확인
 
-### 권한 변경 후
-
-## 권한 실습 (chmod)
-- `ls -l` : 파일 권한 확인
-- `chmod 755 permission-test.txt` : 소유자 읽기/쓰기/실행, 그룹/others 읽기/실행
-- `chmod 700 permission-dir` : 소유자만 모든 권한, 나머지 접근 불가
+## 3. 파일 권한 실습 (chmod)
 
 ### 권한 숫자 의미
-- 4 = 읽기(r), 2 = 쓰기(w), 1 = 실행(x)
-- 7 = rwx, 5 = r-x, 0 = ---
+| 숫자 | 권한 | 의미 |
+|------|------|------|
+| 4 | r | 읽기 |
+| 2 | w | 쓰기 |
+| 1 | x | 실행 |
+| 7 | rwx | 읽기+쓰기+실행 |
+| 5 | r-x | 읽기+실행 |
+| 0 | --- | 권한 없음 |
+
+### 실습 명령어
+- `ls -l` : 파일 권한 확인
+- `chmod 755 permission-test.txt` : 소유자 rwx, 그룹/others r-x
+- `chmod 700 permission-dir` : 소유자만 rwx, 나머지 접근 불가
+
+## 4. Docker 설치 확인
+- `docker version` : Docker 버전 확인
+- `docker info` : Docker 시스템 정보 확인
+
+## 5. Docker 기본 운영 명령
+- `docker images` : 이미지 목록 확인
+- `docker ps` : 실행 중인 컨테이너 확인
+- `docker logs test-nginx` : 컨테이너 로그 확인
+- `docker stats --no-stream` : 리소스 사용량 확인
+
+## 6. 컨테이너 실행
+- `docker run hello-world` : hello-world 컨테이너 실행
+- `docker run -it ubuntu bash` : ubuntu 컨테이너 실행
