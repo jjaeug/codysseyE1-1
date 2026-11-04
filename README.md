@@ -3,8 +3,8 @@
 ## 1. GitHub Repository + README.md
 - GitHub 저장소 생성 및 README.md 작성
 - git init, git remote add, git push 완료
-![Git 설정 내역](./p/1.png)
-![GitHub 웹 저장소 화면](./p/2.png)
+![](./p/1.png)
+![](./p/2.png)
 ## 2. 터미널 기본 명령어
 - `pwd` : 현재 경로 확인
 - `ls` : 파일 목록 확인
@@ -32,21 +32,26 @@
 ## 4. Docker 설치 확인
 - `docker version` : Docker 버전 확인
 - `docker info` : Docker 시스템 정보 확인
+![](./p/3.png)
 
 ## 5. Docker 기본 운영 명령
 - `docker images` : 이미지 목록 확인
+![](./p/4.png)
 - `docker ps` : 실행 중인 컨테이너 확인
+![](./p/5.png)
 - `docker logs test-nginx` : 컨테이너 로그 확인
+![](./p/6.png)
 - `docker stats --no-stream` : 리소스 사용량 확인
-
+![](./p/7.png)
 ## 6. 컨테이너 실행
 - `docker run hello-world` : hello-world 컨테이너 실행
 - `docker run -it ubuntu bash` : ubuntu 컨테이너 실행
 
 ## 7. Dockerfile 빌드 및 실행
 - `docker build -t my-ubuntu .` : Dockerfile로 이미지 빌드
+![](./p/8.png)
 - `docker run my-ubuntu` : 커스텀 이미지 실행
-
+![](./p/9.png)
 ### 작성한 Dockerfile
 ` ` `dockerfile
 FROM ubuntu:22.04
@@ -56,7 +61,7 @@ CMD ["bash"]
 
 ## 8. 바인드 마운트 실습
 - 호스트 디렉토리를 컨테이너에 직접 연결
-
+![](./p/10.png)
 ### 실행 명령어
 ` ` `bash
 docker run -d \
@@ -74,3 +79,4 @@ docker run -d \
 ## 9. Docker 볼륨 (Volume) 실습 
 - `docker volume create mydata` : 볼륨 생성
 - `docker run -v mydata:/data ubuntu` : 볼륨 연결
+![](./p/11.png)
