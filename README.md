@@ -3,6 +3,8 @@
 ## 1. GitHub Repository + README.md
 - GitHub 저장소 생성 및 README.md 작성
 - git init, git remote add, git push 완료
+![Git 설정 내역](./1.png)
+![GitHub 웹 저장소 화면](./2.png)
 ## 2. 터미널 기본 명령어
 - `pwd` : 현재 경로 확인
 - `ls` : 파일 목록 확인
